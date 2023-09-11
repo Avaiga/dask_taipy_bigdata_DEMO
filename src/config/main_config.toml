@@ -1,0 +1,90 @@
+
+[DATA_NODE.path_to_data]
+storage_type = "pickle"
+default_data = "src/data/LARGE_amazon_customers_data.csv"
+scope = "SCENARIO:SCOPE"
+
+[TASK.TASK_1]
+inputs = [ "path_to_data:SECTION" ]
+outputs = [ "scored_df:SECTION" ]
+function = "src.algos.algo.task1:function"
+skippable = "True:bool"
+
+[DATA_NODE.scored_df]
+storage_type = "pickle"
+scope = "SCENARIO:SCOPE"
+
+[DATA_NODE.payment_threshold]
+storage_type = "pickle"
+default_data = "1000"
+scope = "SCENARIO:SCOPE"
+
+[DATA_NODE.score_threshold]
+storage_type = "pickle"
+default_data = "1.5"
+scope = "SCENARIO:SCOPE"
+
+
+
+[TASK.TASK_2]
+inputs = [
+  "scored_df:SECTION",
+  "payment_threshold:SECTION",
+  "score_threshold:SECTION"
+]
+outputs = [ "segmented_customer_df:SECTION" ]
+function = "src.algos.algo.task2:function"
+skippable = "True:bool"
+
+[DATA_NODE.segmented_customer_df]
+storage_type = "pickle"
+scope = "SCENARIO:SCOPE"
+
+[TASK.TASK_3]
+inputs = [ "segmented_customer_df:SECTION", "metric:SECTION" ]
+outputs = [ "segment_result:SECTION" ]
+function = "src.algos.algo.task3:function"
+skippable = "True:bool"
+
+[DATA_NODE.segment_result]
+storage_type = "pickle"
+scope = "SCENARIO:SCOPE"
+
+[TASK.TASK_4]
+inputs = [
+  "segment_result:SECTION",
+  "segmented_customer_df:SECTION",
+  "summary_statistic_type:SECTION"
+]
+outputs = [ "high_value_summary_df:SECTION" ]
+function = "src.algos.algo.task4:function"
+skippable = "True:bool"
+
+
+
+
+
+[DATA_NODE.high_value_summary_df]
+storage_type = "pickle"
+scope = "SCENARIO:SCOPE"
+
+[PIPELINE.MAIN_PIPELINE]
+tasks = [
+  "TASK_1:SECTION",
+  "TASK_2:SECTION",
+  "TASK_3:SECTION",
+  "TASK_4:SECTION"
+]
+
+[SCENARIO.SCENARIO_1]
+pipelines = [ "MAIN_PIPELINE:SECTION" ]
+
+[DATA_NODE.metric]
+storage_type = "pickle"
+default_data = "mean"
+scope = "SCENARIO:SCOPE"
+
+[DATA_NODE.summary_statistic_type]
+storage_type = "pickle"
+default_data = "median"
+scope = "SCENARIO:SCOPE"
